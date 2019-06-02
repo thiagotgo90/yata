@@ -1,0 +1,30 @@
+version: "3"
+services: 
+  todo:
+    depends_on: 
+      - "db"
+
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    environment: 
+      - DB_USER=root
+      - DB_PASSWORD=complexpassword
+    networks: 
+      - todo
+    ports: 
+      - 8080:8080
+  
+  db:
+    build: 
+      context: ./todo-db
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - "MYSQL_ROOT_PASSWORD=complexpassword"
+      - "MYSQL_DATABASE=Todo"
+    networks: 
+      - todo
+
+networks: 
+  todo:

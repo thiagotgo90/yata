@@ -8,16 +8,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("{env}/todo")
+@RequestMapping("${env}/todo")
 public class TodoController {
-	
-	
+
+	private TodoRepository repository;
+
+	public TodoController(TodoRepository repository) {
+		this.repository = repository;
+	}
+
 	@GetMapping
-	public ResponseEntity<String> hello(){
+	public ResponseEntity<Iterable<Todo>> findAll() {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.contentType(MediaType.APPLICATION_JSON)
-				.body("{\"message\": \"hello\"}");
+				.body(repository.findAll());
 	}
 
 }
