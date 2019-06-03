@@ -12,7 +12,5 @@ public class YetAnotherTodoApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
-	
-	
 
 }

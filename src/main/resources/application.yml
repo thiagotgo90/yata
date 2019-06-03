@@ -1,24 +1,10 @@
 spring:
-  profiles:
-    active:
-    - dev
-    
-env: ${spring.profiles.active}
-
----
-spring:
-  profiles: dev
-  jpa:
-    show-sql: true
-    database: mysql
-    generate-ddl: true
   datasource:
-    url: jdbc:mysql://localhost:8000/Todo
-    username: root
-    password: complexpassword
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
 server:
   port: 8081
 
+env: dev
   
 ---
 spring:
@@ -31,5 +17,8 @@ spring:
     url: jdbc:mysql://db:3306/Todo
     username: ${DB_USER}
     password: ${DB_PASSWORD} 
- 
+env: prod
+    
+server:
+  port: 8080
  
