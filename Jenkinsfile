@@ -1,34 +1,45 @@
-node {
-    
-    def mvnHome = tool 'maven-3.6.1'
+pipeline {
 
-    // holds reference to docker image
-    def dockerImage
-    // ip address of the docker private repository(nexus)
-    
-    def dockerRepoUrl = "localhost:8082"
-    def dockerImageName = "yata"
-      
-    stage('Clone Repo') { // for display purposes
-        
-        git ' https://github.com/thiagotgo90/yata.git'
-        mvnHome = tool 'maven-3.6.1'
-    }    
+    agent any
 
-    stage('Build Project') {
-      // build project via maven
-        sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+    parameters {
+      string (name: 'dockerRepoUrl', defaultValue: 'localhost:8082', description: 'Repo URL')
     }
-	
-	stage('Build Docker Image') {
-    //build docker image
-    //sh "mv ./target/hello*.jar ./data" 
 
-    docker.withRegistry("http://localhost:8082", 'local-registry-credential') {
-            
-      dockerImage = docker.build("${dockerImageName}:${env.BUILD_NUMBER}")
-      dockerImage.push()
+    stages {
+
+      stage('Clone Repo') { 
+
+        steps {
+          git ' https://github.com/thiagotgo90/yata.git'
+        }        
+      }    
+
+      stage('Build Project') {
+
+        steps {
+          
+          script {
+            def mvnHome = tool 'maven-3.6.1'
+            sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
+          }
+        }
+      }
+    
+      stage('Build Docker Image') {
+        
+        steps {
+          
+          script {
+
+              def dockerImageName = "yata"
+          
+              docker.withRegistry("http://${params.dockerRepoUrl}", 'local-registry-credential') {
+                dockerImage = docker.build("${dockerImageName}:${env.BUILD_NUMBER}")
+                dockerImage.push()
+            }
+          }
+      }
     }
   }
-
 }
